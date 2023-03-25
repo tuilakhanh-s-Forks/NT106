@@ -10,11 +10,13 @@ namespace ChatServer
 		Message,
 		LogIn,
 		LogOut,
+		ServerStopped,
 		Null
 	}
 
 	public class Packet
 	{
+		#region Public Members
 		public DataIdentifier ChatDataIdentifier
 		{
 			get { return _dataIndentifier; }
@@ -32,12 +34,15 @@ namespace ChatServer
 			get { return _message; }
 			set { _message = value; }
 		}
+		#endregion
 
+		#region Private Members
 		private DataIdentifier _dataIndentifier;
 		private string _name;
 		private string _message;
+		#endregion
 
-
+		#region Constructor
 		public Packet()
 		{
 			_dataIndentifier = DataIdentifier.Null;
@@ -52,6 +57,10 @@ namespace ChatServer
 			_message = message;
 		}
 
+		/// <summary>
+		/// Decode Datagram
+		/// </summary>
+		/// <param name="data"></param>
 		public Packet(byte[] data)
 		{
 			_dataIndentifier = (DataIdentifier)BitConverter.ToInt32(data, 0);
@@ -70,16 +79,19 @@ namespace ChatServer
 			else
 				_message = "";
 		}
+		#endregion
 
+		#region Public Methods
 		public byte[] GetDatagram()
 		{
 			List<byte> dataStream = new List<byte>();
 
 			dataStream.AddRange(BitConverter.GetBytes((Int32)_dataIndentifier));
 
-			dataStream.AddRange(BitConverter.GetBytes((Int32)_name.Length));
+			// String lenght != unicode lenght
+			dataStream.AddRange(BitConverter.GetBytes((Int32)Encoding.Unicode.GetByteCount(_name)));
 
-			dataStream.AddRange(BitConverter.GetBytes((Int32)_message.Length));
+			dataStream.AddRange(BitConverter.GetBytes((Int32)Encoding.Unicode.GetByteCount(_message)));
 
 			if (!string.IsNullOrEmpty(_name))
 				dataStream.AddRange(Encoding.Unicode.GetBytes(_name));
@@ -89,6 +101,6 @@ namespace ChatServer
 
 			return dataStream.ToArray();
 		}
-
+		#endregion
 	}
 }
