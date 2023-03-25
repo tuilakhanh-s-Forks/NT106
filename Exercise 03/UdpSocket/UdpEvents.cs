@@ -1,6 +1,6 @@
-﻿namespace UDPSocket
+﻿namespace UdpSocket
 {
-	public class Events
+	public class UdpEvents
 	{
 		/// <summary>
 		/// Event when listener has started
@@ -12,7 +12,7 @@
 		/// </summary>
 		public EventHandler Stopped;
 
-		public Events() { }
+		public UdpEvents() { }
 
 		internal void ListenerStarted(object sender) 
 		{ 

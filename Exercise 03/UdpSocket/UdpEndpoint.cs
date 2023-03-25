@@ -2,9 +2,9 @@
 using System.Net.Sockets;
 using System.Text;
 
-namespace UDPSocket
+namespace UdpSocket
 {
-	internal class UDPEndpoint
+	public class UdpEndpoint
 	{
 		/// <summary>
 		/// Event when a new endpoint is detected.
@@ -19,10 +19,10 @@ namespace UDPSocket
 		/// <summary>
 		/// Event
 		/// </summary>
-		public Events Events
+		public UdpEvents Events
 		{
 			get { return _Events; }
-			set 
+			set
 			{
 				if (value == null) throw new ArgumentNullException(nameof(Events));
 				_Events = value;
@@ -62,11 +62,12 @@ namespace UDPSocket
 		private int _MaxDatagramSize = 65507;
 		private EndPoint _Endpoint = new IPEndPoint(IPAddress.Any, 0);
 		private UdpClient _UdpClient;
-		private Events _Events = new Events();
+		private UdpEvents _Events = new UdpEvents();
 
 		private List<string> _RemoteIpPort = new List<string>();
 
 		private SemaphoreSlim _SendLock = new SemaphoreSlim(1, 1);
+
 		internal class State
 		{
 			internal State(int bufferSize)
@@ -82,14 +83,22 @@ namespace UDPSocket
 		/// </summary>
 		/// <param name="ip">Local IP address.</param>
 		/// <param name="port">Local port number.</param>
-		public UDPEndpoint(string ip, int port)
+		public UdpEndpoint(string ip, int port)
 		{
-			if (string.IsNullOrEmpty(ip)) throw new ArgumentNullException(nameof(ip));
 			if (port < 0 || port > 65535) throw new ArgumentException("Port must be greater than or equal to zero and less than or equal to 65535.");
 			_Port = port;
-			_IPAddress = IPAddress.Parse(ip);
-
-			_UdpClient = new UdpClient();
+			if (String.IsNullOrEmpty(ip))
+			{
+				_IPAddress = null;
+				_UdpClient = new UdpClient();
+				_UdpClient.Client.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReuseAddress, true);
+				_UdpClient.ExclusiveAddressUse = false;
+			}
+			else
+			{
+				_IPAddress = IPAddress.Parse(ip);
+				_UdpClient = new UdpClient(port);
+			}
 		}
 
 		/// <summary>
@@ -100,7 +109,15 @@ namespace UDPSocket
 			State state = new State(_MaxDatagramSize);
 			_Socket = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
 			_Socket.SetSocketOption(SocketOptionLevel.IP, SocketOptionName.ReuseAddress, true);
-			_Socket.Bind(new IPEndPoint(_IPAddress, _Port));
+
+			if (_IPAddress == null)
+			{
+				_Socket.Bind(new IPEndPoint(IPAddress.Any, _Port)); // broadcast endpoint
+			}
+			else
+			{
+				_Socket.Bind(new IPEndPoint(_IPAddress, _Port));
+			}
 
 			_Events.ListenerStarted(this);
 
@@ -124,15 +141,31 @@ namespace UDPSocket
 		/// </summary>
 		/// <param name="ip">IP address.</param>
 		/// <param name="port">Port.</param>
-		/// <param name="text">Text to send.</param>
-		public void Send(string ip, int port, string text)
+		/// <param name="data">Bytes.</param>
+		public void Send(string ip, int port, byte[] data)
 		{
 			if (String.IsNullOrEmpty(ip)) throw new ArgumentNullException(nameof(ip));
 			if (port < 0 || port > 65535) throw new ArgumentException("Port is out of range; must be greater than or equal to zero and less than or equal to 65535.");
-			if (String.IsNullOrEmpty(text)) throw new ArgumentNullException(nameof(text));
-			byte[] data = Encoding.Unicode.GetBytes(text);
+			if (data == null || data.Length < 1) throw new ArgumentNullException(nameof(data));
 			if (data.Length > _MaxDatagramSize) throw new ArgumentException("Data exceed maximum datagram size (" + data.Length + " data bytes, " + _MaxDatagramSize + " bytes).");
 			SendInternal(ip, port, data);
+		}
+
+		/// <summary>
+		/// Send a datagram asynchronously to the specific IP address and UDP port.
+		/// This will throw a SocketException if the report UDP port is unreachable.
+		/// </summary>
+		/// <param name="ip">IP address.</param>
+		/// <param name="port">Port.</param>
+		/// <param name="data">Bytes.</param> 
+		public async Task SendAsync(string ip, int port, byte[] data, short ttl = 64)
+		{
+			if (String.IsNullOrEmpty(ip)) throw new ArgumentNullException(nameof(ip));
+			if (port < 0 || port > 65535) throw new ArgumentException("Port is out of range; must be greater than or equal to zero and less than or equal to 65535.");
+			if (data == null || data.Length < 1) throw new ArgumentNullException(nameof(data));
+			if (data.Length > _MaxDatagramSize) throw new ArgumentException("Data exceed maximum datagram size (" + data.Length + " data bytes, " + _MaxDatagramSize + " bytes).");
+			if (ttl < 0) throw new ArgumentOutOfRangeException(nameof(ttl));
+			await SendInternalAsync(ip, port, data).ConfigureAwait(false);
 		}
 
 		private void ReciveCallBack(IAsyncResult ar)
@@ -146,7 +179,7 @@ namespace UDPSocket
 				string ipPort = _Endpoint.ToString();
 				string ip;
 				Int32 port;
-				ParseIpPort(ipPort, out ip, out port);
+				Util.ParseIpPort(ipPort, out ip, out port);
 
 				if (!_RemoteIpPort.Contains(ipPort))
 				{
@@ -169,7 +202,7 @@ namespace UDPSocket
 			}
 			catch (Exception)
 			{
-				_Events.ListenerStarted(this);
+				_Events.ListenerStopped(this);
 			}
 		}
 
@@ -189,18 +222,27 @@ namespace UDPSocket
 			}
 		}
 
-		private static void ParseIpPort(string ipPort, out string ip, out Int32 port)
+		private async Task SendInternalAsync(string ip, int port, byte[] data)
 		{
-			if (String.IsNullOrEmpty(ipPort)) throw new ArgumentNullException(nameof(ipPort));
+			await _SendLock.WaitAsync();
 
-			ip = "";
-			port = -1;
+			IPEndPoint ipe = new IPEndPoint(IPAddress.Parse(ip), port);
 
-			int colonIndex = ipPort.LastIndexOf(':');
-			if (colonIndex != -1)
+			try
 			{
-				ip = ipPort.Substring(0, colonIndex);
-				port = Convert.ToInt32(ipPort.Substring(colonIndex + 1));
+				await _UdpClient.SendAsync(data, data.Length, ipe).ConfigureAwait(false);
+			}
+			catch (TaskCanceledException)
+			{
+
+			}
+			catch (OperationCanceledException)
+			{
+
+			}
+			finally
+			{
+				_SendLock.Release();
 			}
 		}
 	}
