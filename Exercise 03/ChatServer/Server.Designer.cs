@@ -46,6 +46,7 @@
 			Exit.TabIndex = 0;
 			Exit.Text = "Thoát";
 			Exit.UseVisualStyleBackColor = true;
+			Exit.Click += Exit_Click;
 			// 
 			// richTextBoxStatus
 			// 
