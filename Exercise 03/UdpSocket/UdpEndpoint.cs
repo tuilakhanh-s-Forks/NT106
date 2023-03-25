@@ -6,6 +6,7 @@ namespace UdpSocket
 {
 	public class UdpEndpoint
 	{
+		#region Public Members
 		/// <summary>
 		/// Event when a new endpoint is detected.
 		/// </summary>
@@ -55,7 +56,9 @@ namespace UdpSocket
 				return _RemoteIpPort;
 			}
 		}
+		#endregion
 
+		#region Private Members
 		private IPAddress _IPAddress;
 		private Int32 _Port = 0;
 		private Socket? _Socket = null;
@@ -67,7 +70,9 @@ namespace UdpSocket
 		private List<string> _RemoteIpPort = new List<string>();
 
 		private SemaphoreSlim _SendLock = new SemaphoreSlim(1, 1);
+		#endregion
 
+		#region Internal Classes
 		internal class State
 		{
 			internal State(int bufferSize)
@@ -77,7 +82,9 @@ namespace UdpSocket
 
 			internal byte[] Buffer;
 		}
+		#endregion
 
+		#region Constructor
 		/// <summary>
 		/// Instantiate the UDP endpoint.
 		/// </summary>
@@ -100,7 +107,9 @@ namespace UdpSocket
 				_UdpClient = new UdpClient(port);
 			}
 		}
+		#endregion
 
+		#region Public Methods
 		/// <summary>
 		/// Start the UDP listener to receive datagrams.  Before calling this method, set the 'DatagramReceived' event.
 		/// </summary>
@@ -121,7 +130,7 @@ namespace UdpSocket
 
 			_Events.ListenerStarted(this);
 
-			_Socket.BeginReceiveFrom(state.Buffer, 0, _MaxDatagramSize, SocketFlags.None, ref _Endpoint, ReciveCallBack, state);
+			_Socket.BeginReceiveFrom(state.Buffer, 0, _MaxDatagramSize, SocketFlags.None, ref _Endpoint, new AsyncCallback(ReciveCallBack), state);
 		}
 
 		/// <summary>
@@ -167,13 +176,15 @@ namespace UdpSocket
 			if (ttl < 0) throw new ArgumentOutOfRangeException(nameof(ttl));
 			await SendInternalAsync(ip, port, data).ConfigureAwait(false);
 		}
+		#endregion
 
+		#region Private Methods
 		private void ReciveCallBack(IAsyncResult ar)
 		{
 			try
 			{
 				State state = (State)ar.AsyncState;
-				_Socket.BeginReceiveFrom(state.Buffer, 0, _MaxDatagramSize, SocketFlags.None, ref _Endpoint, ReciveCallBack, state);
+				_Socket.BeginReceiveFrom(state.Buffer, 0, _MaxDatagramSize, SocketFlags.None, ref _Endpoint, new AsyncCallback(ReciveCallBack), state);
 				int datagramLenght = _Socket.EndReceiveFrom(ar, ref _Endpoint);
 
 				string ipPort = _Endpoint.ToString();
@@ -183,7 +194,7 @@ namespace UdpSocket
 
 				if (!_RemoteIpPort.Contains(ipPort))
 				{
-					_RemoteIpPort.Append(ipPort);
+					_RemoteIpPort.Add(ipPort);
 					EndpointDeteched?.Invoke(this, new EndpointMetadata(ip, port));
 				}
 
@@ -245,5 +256,6 @@ namespace UdpSocket
 				_SendLock.Release();
 			}
 		}
+		#endregion
 	}
 }
