@@ -1,6 +1,7 @@
 ﻿using ChatServer;
 using System.Net;
 using System.Net.Sockets;
+using System.Threading;
 using UdpSocket;
 
 namespace ChatClient
@@ -13,6 +14,7 @@ namespace ChatClient
 		private Int32 _serverPort;
 		private UdpEndpoint _endpoint;
 		private bool _isConnected = false;
+		private System.Timers.Timer _timer;
 
 		// Status delegate
 		private delegate void DisplayMessageDelegate(string message);
@@ -78,8 +80,13 @@ namespace ChatClient
 			{
 				_ = _endpoint.SendAsync(_serverIP.ToString(), _serverPort, loginDatagram);
 				_endpoint.Start();
+				_timer = new System.Timers.Timer(5000);
+				_timer.AutoReset = false;
+				_timer.Start();
+				_timer.Elapsed += OnTimeOut;
 				_endpoint.DatagramReceived += DatagramReceived;
 				_endpoint.EndpointDeteched += Connected;
+				buttonConnect.Enabled = false;
 			}
 			catch (Exception ex)
 			{
@@ -169,10 +176,22 @@ namespace ChatClient
 			{
 				if (!_isConnected)
 				{
+					_timer.Stop();
 					_isConnected = true;
 					this.Invoke(new MethodInvoker(() => buttonConnect.Enabled = false));
 					this.Invoke(new MethodInvoker(() => buttonDisconnect.Enabled = true));
 				}
+			}
+		}
+
+		private void OnTimeOut(object sender, EventArgs e)
+		{
+			if (!_isConnected)
+			{
+				_endpoint.Stop();
+				_endpoint = null;
+				this.Invoke(new MethodInvoker(() => buttonConnect.Enabled = true));
+				MessageBox.Show("Connection Error: TimeOut", "UDP Client", MessageBoxButtons.OK, MessageBoxIcon.Error);
 			}
 		}
 		#endregion
