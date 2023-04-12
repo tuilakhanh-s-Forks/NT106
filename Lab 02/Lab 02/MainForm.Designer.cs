@@ -33,7 +33,7 @@
 			buttonEx5 = new Button();
 			buttonEx6 = new Button();
 			buttonEx2 = new Button();
-			button6 = new Button();
+			buttonEx4 = new Button();
 			buttonExit = new Button();
 			SuspendLayout();
 			// 
@@ -90,15 +90,16 @@
 			buttonEx2.UseVisualStyleBackColor = true;
 			buttonEx2.Click += buttonEx2_Click;
 			// 
-			// button6
+			// buttonEx4
 			// 
-			button6.Font = new Font("Open Sans", 12F, FontStyle.Bold, GraphicsUnit.Point);
-			button6.Location = new Point(484, 167);
-			button6.Name = "button6";
-			button6.Size = new Size(129, 53);
-			button6.TabIndex = 5;
-			button6.Text = "Bài 4";
-			button6.UseVisualStyleBackColor = true;
+			buttonEx4.Font = new Font("Open Sans", 12F, FontStyle.Bold, GraphicsUnit.Point);
+			buttonEx4.Location = new Point(484, 167);
+			buttonEx4.Name = "buttonEx4";
+			buttonEx4.Size = new Size(129, 53);
+			buttonEx4.TabIndex = 5;
+			buttonEx4.Text = "Bài 4";
+			buttonEx4.UseVisualStyleBackColor = true;
+			buttonEx4.Click += buttonEx4_Click;
 			// 
 			// buttonExit
 			// 
@@ -117,14 +118,14 @@
 			AutoScaleMode = AutoScaleMode.Font;
 			ClientSize = new Size(800, 450);
 			Controls.Add(buttonExit);
-			Controls.Add(button6);
+			Controls.Add(buttonEx4);
 			Controls.Add(buttonEx2);
 			Controls.Add(buttonEx6);
 			Controls.Add(buttonEx5);
 			Controls.Add(buttonEx3);
 			Controls.Add(buttonEx1);
 			Name = "MainForm";
-			Text = "Lab1";
+			Text = "Lab 02";
 			Load += Form1_Load;
 			ResumeLayout(false);
 		}
@@ -136,7 +137,7 @@
 		private Button buttonEx5;
 		private Button buttonEx6;
 		private Button buttonEx2;
-		private Button button6;
+		private Button buttonEx4;
 		private Button buttonExit;
 	}
 }
