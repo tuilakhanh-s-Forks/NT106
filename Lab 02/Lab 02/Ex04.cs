@@ -67,74 +67,6 @@ namespace Lab_02
 			UpdateStatus();
 		}
 
-		private static bool IsPhoneValid(string phone)
-		{
-			return Regex.IsMatch(phone, @"^0\d{9}$");
-		}
-
-		private static bool IsValidGrade(string grade)
-		{
-			if (!double.TryParse(grade, out var gradeNum))
-				return false;
-			if (gradeNum < 0 || gradeNum > 10)
-			{
-				return false;
-			}
-			return true;
-		}
-
-		public static bool IsValidStudentId(string id)
-		{
-			if (!Int32.TryParse(id, out var IDNum))
-				return false;
-			return IDNum >= 10000000 && IDNum <= 99999999;
-		}
-
-		public bool IsEmpty()
-		{
-			if (string.IsNullOrEmpty(textBoxNameInput.Text) ||
-				string.IsNullOrEmpty(textBoxIDInput.Text) ||
-				string.IsNullOrEmpty(textBoxPhoneInput.Text) ||
-				string.IsNullOrEmpty(textBoxCourse1Input.Text) ||
-				string.IsNullOrEmpty(textBoxCourse2Input.Text) ||
-				string.IsNullOrEmpty(textBoxCourse3Input.Text))
-			{ return true; }
-			return false;
-		}
-
-		private void ClearTextBoxInput()
-		{
-			textBoxNameInput.Text = string.Empty;
-			textBoxIDInput.Text = string.Empty;
-			textBoxPhoneInput.Text = string.Empty;
-			textBoxCourse1Input.Text = string.Empty;
-			textBoxCourse2Input.Text = string.Empty;
-			textBoxCourse3Input.Text = string.Empty;
-		}
-
-		private void UpdateOutputTextBox(int index)
-		{
-			labelIndex.Text = (_index + 1).ToString();
-			textBoxNameOutput.Text = _students[index].Name;
-			textBoxIDOutput.Text = _students[index].ID.ToString();
-			textBoxPhoneOutput.Text = _students[index].Phone;
-			textBoxCourse1Output.Text = $"{_students[index].Score1:0.##}";
-			textBoxCourse2Output.Text = $"{_students[index].Score2:0.##}";
-			textBoxCourse3Output.Text = $"{_students[index].Score3:0.##}";
-			textBoxAverageOutput.Text = $"{_students[index].AverageScore:0.##}";
-		}
-
-		private void UpdateStatus()
-		{
-			richTextBoxOutput.Text = string.Empty;
-			foreach (var student in _students)
-			{
-				richTextBoxOutput.Text += $"Name: {student.Name} \nMSSV: {student.ID} \nPhone: {student.Phone} \nCourse 1: {student.Score1:0.##} \nCourse 2: {student.Score2:0.##} \nCourse 3: {student.Score3:0.##} \nAverage score: {student.AverageScore:0.##}\n\n";
-			}
-			_index = 0;
-			UpdateOutputTextBox(_index);
-		}
-
 		private void buttonReadTXT_Click(object sender, EventArgs e)
 		{
 			try
@@ -261,6 +193,74 @@ namespace Lab_02
 		{
 			var MainForm = new MainForm();
 			MainForm.Show();
+		}
+
+		private static bool IsPhoneValid(string phone)
+		{
+			return Regex.IsMatch(phone, @"^0\d{9}$");
+		}
+
+		private static bool IsValidGrade(string grade)
+		{
+			if (!double.TryParse(grade, out var gradeNum))
+				return false;
+			if (gradeNum < 0 || gradeNum > 10)
+			{
+				return false;
+			}
+			return true;
+		}
+
+		public static bool IsValidStudentId(string id)
+		{
+			if (!Int32.TryParse(id, out var IDNum))
+				return false;
+			return IDNum >= 10000000 && IDNum <= 99999999;
+		}
+
+		public bool IsEmpty()
+		{
+			if (string.IsNullOrEmpty(textBoxNameInput.Text) ||
+				string.IsNullOrEmpty(textBoxIDInput.Text) ||
+				string.IsNullOrEmpty(textBoxPhoneInput.Text) ||
+				string.IsNullOrEmpty(textBoxCourse1Input.Text) ||
+				string.IsNullOrEmpty(textBoxCourse2Input.Text) ||
+				string.IsNullOrEmpty(textBoxCourse3Input.Text))
+			{ return true; }
+			return false;
+		}
+
+		private void ClearTextBoxInput()
+		{
+			textBoxNameInput.Text = string.Empty;
+			textBoxIDInput.Text = string.Empty;
+			textBoxPhoneInput.Text = string.Empty;
+			textBoxCourse1Input.Text = string.Empty;
+			textBoxCourse2Input.Text = string.Empty;
+			textBoxCourse3Input.Text = string.Empty;
+		}
+
+		private void UpdateOutputTextBox(int index)
+		{
+			labelIndex.Text = (_index + 1).ToString();
+			textBoxNameOutput.Text = _students[index].Name;
+			textBoxIDOutput.Text = _students[index].ID.ToString();
+			textBoxPhoneOutput.Text = _students[index].Phone;
+			textBoxCourse1Output.Text = $"{_students[index].Score1:0.##}";
+			textBoxCourse2Output.Text = $"{_students[index].Score2:0.##}";
+			textBoxCourse3Output.Text = $"{_students[index].Score3:0.##}";
+			textBoxAverageOutput.Text = $"{_students[index].AverageScore:0.##}";
+		}
+
+		private void UpdateStatus()
+		{
+			richTextBoxOutput.Text = string.Empty;
+			foreach (var student in _students)
+			{
+				richTextBoxOutput.Text += $"Name: {student.Name} \nMSSV: {student.ID} \nPhone: {student.Phone} \nCourse 1: {student.Score1:0.##} \nCourse 2: {student.Score2:0.##} \nCourse 3: {student.Score3:0.##} \nAverage score: {student.AverageScore:0.##}\n\n";
+			}
+			_index = 0;
+			UpdateOutputTextBox(_index);
 		}
 	}
 }
