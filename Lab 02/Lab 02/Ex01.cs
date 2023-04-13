@@ -19,12 +19,12 @@
 				{
 					using var streamReader = new StreamReader(openFileDialog.FileName);
 					richTextBoxFile.Text = await streamReader.ReadToEndAsync();
-					MessageBox.Show($"Đọc file {openFileDialog.FileName} thành công");
+					MessageBox.Show($"Read file from {openFileDialog.FileName}");
 				}
 			}
 			catch (Exception ex)
 			{
-				MessageBox.Show(ex.Message, "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
+				MessageBox.Show(ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
 			}
 
 		}
@@ -33,7 +33,7 @@
 		{
 			if (string.IsNullOrEmpty(richTextBoxFile.Text))
 			{
-				MessageBox.Show("Vui lòng nhập nội dung file", "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
+				MessageBox.Show("Please input file contents", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
 				return;
 			}
 			try
@@ -47,12 +47,12 @@
 				{
 					var outputPath = saveFileDialog.FileName;
 					await File.WriteAllTextAsync(outputPath, richTextBoxFile.Text.ToUpper());
-					MessageBox.Show($"Ghi thành công file tại {outputPath}");
+					MessageBox.Show($"Success to write file at {outputPath}");
 				}
 			}
 			catch (Exception ex)
 			{
-				MessageBox.Show(ex.Message, "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
+				MessageBox.Show(ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
 			}
 		}
 
