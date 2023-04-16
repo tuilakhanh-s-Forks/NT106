@@ -191,5 +191,11 @@
 			}
 			return false;
 		}
+
+		private void Ex06_FormClosed(object sender, FormClosedEventArgs e)
+		{
+			var MainForm = new MainForm();
+			MainForm.Show();
+		}
 	}
 }

@@ -52,5 +52,11 @@ namespace Lab_02
 				MessageBox.Show(ex.Message, "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
 			}
 		}
+
+		private void Ex03_FormClosed(object sender, FormClosedEventArgs e)
+		{
+			var MainForm = new MainForm();
+			MainForm.Show();
+		}
 	}
 }

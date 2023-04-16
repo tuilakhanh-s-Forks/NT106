@@ -96,6 +96,7 @@
 			Controls.Add(treeViewExplorer);
 			Name = "Ex06";
 			Text = "Ex06";
+			FormClosed += Ex06_FormClosed;
 			Load += Ex06_Load;
 			groupBoxFileConten.ResumeLayout(false);
 			((System.ComponentModel.ISupportInitialize)pictureBoxFile).EndInit();

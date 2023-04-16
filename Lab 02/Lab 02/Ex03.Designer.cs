@@ -85,6 +85,7 @@
 			Controls.Add(richTextBoxExpression);
 			Name = "Ex03";
 			Text = "Exercise 03";
+			FormClosed += Ex03_FormClosed;
 			ResumeLayout(false);
 		}
 
