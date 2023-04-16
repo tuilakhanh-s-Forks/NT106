@@ -41,6 +41,13 @@ namespace Lab_02
 			Ex04.Show();
 		}
 
+		private void buttonEx5_Click(object sender, EventArgs e)
+		{
+			this.Hide();
+			var Ex05 = new Ex05();
+			Ex05.Show();
+		}
+
 		private void buttonEx6_Click(object sender, EventArgs e)
 		{
 			this.Hide();

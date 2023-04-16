@@ -1,0 +1,3 @@
+Câu hỏi: so sánh sự khác nhau của “input5.txt” và output5?
+
+Trả lời: input5.txt là file dạng text còn output5 là file dạng Binary và được nén lại và đặt trong container .zip ngoài ra dung lượng của file output5 cũng nhỏ hơn so với file txt do đã được thuật toán nén nén lại.
