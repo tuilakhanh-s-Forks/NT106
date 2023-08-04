@@ -1,0 +1,24 @@
+[submodule "Lab03"]
+	path = Lab03
+	url = git@github.com:NT106-N22-Group-01/Lab03.git
+[submodule "Lab04"]
+	path = Lab04
+	url = git@github.com:NT106-N22-Group-01/Lab04.git
+[submodule "Lab05"]
+	path = Lab05
+	url = https://github.com/NT106-N22-Group-01/Lab05
+[submodule "Lab06"]
+	path = Lab06
+	url = git@github.com:NT106-N22-Group-01/Lab06.git
+[submodule "ChatClientServer"]
+	path = ChatClientServer
+	url = git@github.com:NT106-N22-Group-01/ChatClientServer.git
+[submodule "AsyncGetAPI"]
+	path = AsyncGetAPI
+	url = git@github.com:NT106-N22-Group-01/AsyncGetAPI.git
+[submodule "Final/MusicStreamingAPI"]
+	path = Final/MusicStreamingAPI
+	url = https://github.com/NT106-N22-Group-01/MusicStreamingAPI
+[submodule "Final/MusicStreamingWF"]
+	path = Final/MusicStreamingWF
+	url = git@github.com:NT106-N22-Group-01/MusicStreaming.git
